@@ -14,27 +14,31 @@ library(scales)
 
 source("../src/r-scripts/data_handling_functions.R")
 
-racetrack.flowdata <- loadflowdata("racetrack","2020-12-23")
-racetrack.costdata <- loadcostdata("racetrack","21-Dec-2020")
+dia <- 0.1
+density <- 1000
+
+racetrack.flowdata <- loadflowdata("racetrack","2020-12-27", dia, density)
+racetrack.costdata <- loadcostdata("racetrack","26-Dec-2020")
 racetrack.data <- combinedata(racetrack.flowdata, racetrack.costdata)
 
-branch.flowdata <- loadflowdata("branch","2020-12-09")
+branch.flowdata <- loadflowdata("branch","2020-12-09", dia, density)
 branch.costdata <- NA
 #branch.costdata <- loadcostdata("branch","21-Dec-2020")
 branch.data <- combinedata(branch.flowdata, branch.costdata)
 
-branchandobstacles.flowdata <- loadflowdata("branchandobstacles", "2020-12-20")
+branchandobstacles.flowdata <- loadflowdata("branchandobstacles", 
+                                            "2020-12-27", dia, density)
 branchandobstacles.costdata <- loadcostdata("branchandobstacles", "21-Dec-2020")
 branchandobstacles.data <- combinedata(branchandobstacles.flowdata, 
                                        branchandobstacles.costdata)
 
-#obstacles.flowdata <- loadflowdata("obstacles","2020-12-20")
-#obstacles.costdata <- loadcostdata("obstacles","21-Dec-2020")
-#obstacles.data <- combinedata(obstacles.flowdata, obstacles.costdata)
+obstacles.flowdata <- loadflowdata("obstacles","2020-12-27", dia, density)
+obstacles.costdata <- loadcostdata("obstacles","26-Dec-2020")
+obstacles.data <- combinedata(obstacles.flowdata, obstacles.costdata)
 
 
-data <- list("racetrack" = racetrack.data, "branch" = branch.data, "branchandobstacles" = branchandobstacles.data)
-tracklist<-c("racetrack", "branch", "branchandobstacles")
+data <- list("racetrack" = racetrack.data, "obstacles" = obstacles.data, "branch" = branch.data, "branchandobstacles" = branchandobstacles.data)
+tracklist<-c("racetrack", "obstacles", "branch", "branchandobstacles")
 alldata <- combinetracks(data, tracklist)
 alldata.melted <- melt(alldata, id.vars = c("number","Wo","CR","Freq","track"))
 
@@ -80,7 +84,7 @@ plot_grid(racetrack, branch, obstacles, branchandobstacles, nrow = 2)
 
 ## Um and Q
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 Um <- subset(alldata.melted, grepl("connect_Um_avg", alldata.melted$variable))
 Q <- subset(alldata.melted, grepl("Q", alldata.melted$variable))
@@ -88,8 +92,8 @@ Q <- subset(alldata.melted, grepl("Q", alldata.melted$variable))
 Um.CR <- ggplot(Um, aes(x = CR, y = value, color = track)) + 
   geom_point(size = 4) +
   xlab("CR") + ylab("Fluid speed") + 
-  scale_color_viridis(name = "Track configuration", discrete = TRUE, option="D",
-                      labels = c("Racetrack", "Branch", "Branch and Obstacles")) + 
+  scale_color_viridis(name = "Track configuration:", discrete = TRUE, option="D",
+                      labels = c("Racetrack", "Obstacles", "Branch", "Branch and Obstacles")) + 
   theme_bw() + theme(legend.position = "bottom")
 
 leg.all<-get_legend(Um.CR)
@@ -111,25 +115,25 @@ Um.Wo <- ggplot(Um, aes(x = Wo, y = value, color = track)) + geom_point() +
 
 Q.CR <- ggplot(Q, aes(x = CR, y = value, color = track)) + geom_point() +
   xlab("CR") + ylab("Volume flow rate") + 
-  scale_color_viridis(discrete = TRUE, option="D") + ylim(0,3) +
+  scale_color_viridis(discrete = TRUE, option="D") + ylim(0, 6) +
   theme_bw() + theme(legend.position = "none")
 
 Q.Freq <- ggplot(Q, aes(x = Freq, y = value, color = track)) + geom_point() +
   xlab("Frequency") + ylab("Volume flow rate") + 
-  scale_color_viridis(discrete = TRUE, option="D") + ylim(0,3) +
+  scale_color_viridis(discrete = TRUE, option="D") + ylim(0, 6) +
   theme_bw() + theme(legend.position = "none")
 
 Q.Wo <- ggplot(Q, aes(x = Wo, y = value, color = track)) + geom_point() +
   xlab("Womersley number") + ylab("Volume flow rate") + 
-  scale_color_viridis(discrete = TRUE, option="D") + ylim(0,3) +
+  scale_color_viridis(discrete = TRUE, option="D") + ylim(0, 6) +
   theme_bw() + theme(legend.position = "npne")
 
 
 #png(filename = "Um-Q.png", height = 9, width = 6, units = "in", res = 600)
 plot_grid(Um.CR, Q.CR, Um.Freq, Q.Freq, Um.Wo, Q.Wo, nrow = 3)
 #dev.off()
-#png(filename = "legend.png", height = 2, width = 5, units = "in", res = 600)
-#plot_grid(leg.all)
+#png(filename = "legend.png", height = 2, width = 7, units = "in", res = 600)
+plot_grid(leg.all)
 #dev.off()
 #png(filename = "Um.png", height = 3, width = 8, units = "in", res = 600)
 plot_grid(Um.CR, Um.Freq, Um.Wo, nrow=1)
@@ -185,6 +189,11 @@ DeltaP.Wo <- ggplot(DeltaP, aes(x = Wo, y = value, shape = variable, color = tra
 #png(filename = "Pavg-DeltaP.png", height = 9, width = 6, units = "in", res = 600)
 plot_grid(Pavg.CR, DeltaP.CR, Pavg.Freq, DeltaP.Freq, Pavg.Wo, DeltaP.Wo, nrow = 3)
 #dev.off()
+
+#png(filename = "deltaP.png", height = 3, width = 8, units = "in", res = 600)
+plot_grid(DeltaP.CR, DeltaP.Freq, DeltaP.Wo, nrow=1)
+#dev.off()
+
 ```
 
 
@@ -197,26 +206,26 @@ Work <- subset(alldata.melted, grepl("Work", alldata.melted$variable))
 
 COT.CR <- ggplot(COT, aes(x = CR, y = value, color = track)) + 
   geom_point() + geom_smooth(aes(fill = track))+
-  xlab("CR") + ylab("log COT") + 
+  xlab("CR") + ylab("COT") + 
   scale_color_viridis(discrete = TRUE, option="D") + 
   scale_fill_viridis(discrete = TRUE, option="D") + 
-  scale_y_continuous(trans=log10_trans()) +
+  #scale_y_continuous(trans=log10_trans()) +
   theme_bw() + theme(legend.position = "none")
 
 COT.Freq <- ggplot(COT, aes(x = Freq, y = value, color = track)) + 
   geom_point() +  geom_smooth(aes(fill = track))+
-  xlab("Frequency") + ylab("log COT") +
+  xlab("Frequency") + ylab("COT") +
   scale_color_viridis(discrete = TRUE, option="D") + 
   scale_fill_viridis(discrete = TRUE, option="D") + 
-  scale_y_continuous(trans=log10_trans()) +
+  #scale_y_continuous(trans=log10_trans()) +
   theme_bw() + theme(legend.position = "none")
 
 COT.Wo <- ggplot(COT, aes(x = Wo, y = value, color = track)) + 
   geom_point() + geom_smooth(aes(fill = track))+
-  xlab("Womersley number") +ylab("log COT") +
+  xlab("Womersley number") +ylab("COT") +
   scale_color_viridis(discrete = TRUE, option="D") + 
   scale_fill_viridis(discrete = TRUE, option="D") + 
-  scale_y_continuous(trans=log10_trans()) +
+  #scale_y_continuous(trans=log10_trans()) +
   theme_bw() + theme(legend.position = "none")
 
 Work.CR <- ggplot(Work, aes(x = CR, y = value, color = track)) + 
@@ -246,6 +255,38 @@ plot_grid(COT.CR, COT.Freq, COT.Wo, nrow=1)
 #dev.off()
 ```
 
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+COT.CR <- ggplot(COT, aes(x = CR, y = value, color = track)) + 
+  geom_point() + geom_smooth(aes(fill = track))+
+  xlab("CR") + ylab("COT") + ylim(1e9,1e10) +
+  scale_color_viridis(discrete = TRUE, option="D") + 
+  scale_fill_viridis(discrete = TRUE, option="D") + 
+  #scale_y_continuous(trans=log10_trans()) +
+  theme_bw() + theme(legend.position = "none")
+
+COT.Freq <- ggplot(COT, aes(x = Freq, y = value, color = track)) + 
+  geom_point() +  geom_smooth(aes(fill = track))+
+  xlab("Frequency") + ylab("COT") + ylim(1e9,1e10) +
+  scale_color_viridis(discrete = TRUE, option="D") + 
+  scale_fill_viridis(discrete = TRUE, option="D") + 
+  #scale_y_continuous(trans=log10_trans()) +
+  theme_bw() + theme(legend.position = "none")
+
+COT.Wo <- ggplot(COT, aes(x = Wo, y = value, color = track)) + 
+  geom_point() + geom_smooth(aes(fill = track))+
+  xlab("Womersley number") +ylab("COT") + ylim(1e9,1e10) +
+  scale_color_viridis(discrete = TRUE, option="D") + 
+  scale_fill_viridis(discrete = TRUE, option="D") + 
+  #scale_y_continuous(trans=log10_trans()) +
+  theme_bw() + theme(legend.position = "none")
+
+#png(filename = "COT_sub.png", height = 3, width = 8, units = "in", res = 600)
+plot_grid(COT.CR, COT.Freq, COT.Wo, nrow=1)
+#dev.off()
+
+```
+
 
 ## Overall COT
 
@@ -267,14 +308,34 @@ Work.violin <- ggplot(alldata, aes(x = track, y = Work, fill = track)) +
   theme_bw() +theme(legend.position = "none")
 
 COT.violin <- ggplot(alldata, aes(x = track, y = COT, fill = track)) + 
-  geom_violin(color="gray20") + xlab(" ") + ylab("log COT") +
+  geom_violin(color="gray20") + xlab(" ") + ylab("COT") +
   stat_summary(fun = "mean", color = "black", fill = "white", 
                pch = 21, size = 1.25) +
   scale_fill_viridis(name="", discrete = TRUE, labels = c("Branch and Obstacles", "Racetrack")) + 
-  scale_y_continuous(trans=log10_trans()) +
+  #scale_y_continuous(trans=log10_trans()) +
   theme_bw() + theme(legend.position = "none")
 
 #png(filename = "work-cot-violin.png", width=9, height=4.5, units="in", res=600)
 plot_grid(Work.violin, COT.violin, nrow=1)
 #dev.off()
+```
+```{r}
+model.raceobs<-t.test(racetrack.data$COT,obstacles.data$COT)
+print("COT: racetrack vs. obstacles")
+print(model.raceobs)
+model.racebranch<-t.test(racetrack.data$COT,branch.data$COT)
+print("COT: racetrack vs. branch")
+print(model.racebranch)
+model.racebo<-t.test(racetrack.data$COT,branchandobstacles.data$COT)
+print("COT: racetrack vs. branchandobstacles")
+print(model.racebo)
+model.obbranch<-t.test(obstacles.data$COT,branch.data$COT)
+print("COT: obstacles vs. branch")
+print(model.obbranch)
+model.obbo<-t.test(obstacles.data$COT,branchandobstacles.data$COT)
+print("COT: obstacles vs. branchandobstacles")
+print(model.obbo)
+model.branchbo<-t.test(branch.data$COT,branchandobstacles.data$COT)
+print("COT: branch vs. branchandobstacles")
+print(model.branchbo)
 ```
