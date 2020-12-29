@@ -21,9 +21,9 @@ racetrack.flowdata <- loadflowdata("racetrack","2020-12-27", dia, density)
 racetrack.costdata <- loadcostdata("racetrack","26-Dec-2020")
 racetrack.data <- combinedata(racetrack.flowdata, racetrack.costdata)
 
-branch.flowdata <- loadflowdata("branch","2020-12-09", dia, density)
-branch.costdata <- NA
-#branch.costdata <- loadcostdata("branch","21-Dec-2020")
+branch.flowdata <- loadflowdata("branch","2020-12-28", dia, density)
+#branch.costdata <- NA
+branch.costdata <- loadcostdata("branch","28-Dec-2020")
 branch.data <- combinedata(branch.flowdata, branch.costdata)
 
 branchandobstacles.flowdata <- loadflowdata("branchandobstacles", 
