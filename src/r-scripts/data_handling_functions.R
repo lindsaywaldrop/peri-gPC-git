@@ -67,3 +67,15 @@ plot.track <- function(track){
   alldata <- list("race" = race.data, "tube" = tube.data)
   return(alldata)
 }
+
+# Loading Sobol indices 
+
+load.sobols <- function(track){
+  data <- read.table(paste0("../results/gpc-surrogates/",track,"/heart_sob_fulldataset_",track,"_2021-06-15_np2.dat"))
+  colnames(data) <- c("aorta_Um_avg","aorta_Um_max","aorta_Ux_avg","aorta_Ux_max","connect_Um_avg",
+              "connect_Um_max","connect_Uy_avg","connect_Uy_max","vena_Um_avg","vena_Um_max",
+              "vena_Ux_avg","vena_Ux_max","aorta_P_avg","aorta_P_max","vena_P_avg","vena_P_max",
+              "delta_P","Q","COT","Work")
+  rownames(data) <- c("Wo","CR","Freq","Wo&CR","Wo&Freq","CR&Freq","All")
+  return(data)
+}

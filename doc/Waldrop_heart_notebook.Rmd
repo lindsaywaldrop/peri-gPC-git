@@ -20,27 +20,47 @@ density <- 1000
 racetrack.flowdata <- loadflowdata("racetrack","2020-12-27", dia, density)
 racetrack.costdata <- loadcostdata("racetrack","26-Dec-2020")
 racetrack.data <- combinedata(racetrack.flowdata, racetrack.costdata)
+write.csv(racetrack.data, 
+          file = paste0("../results/r-csv-files/racetrack_results",
+                        "/fulldataset_racetrack_",
+                        Sys.Date(),".csv"))
 
 branch.flowdata <- loadflowdata("branch","2020-12-28", dia, density)
 #branch.costdata <- NA
 branch.costdata <- loadcostdata("branch","28-Dec-2020")
 branch.data <- combinedata(branch.flowdata, branch.costdata)
+write.csv(branch.data, 
+          file = paste0("../results/r-csv-files/branch_results",
+                        "/fulldataset_branch_",
+                        Sys.Date(),".csv"))
 
 branchandobstacles.flowdata <- loadflowdata("branchandobstacles", 
                                             "2020-12-27", dia, density)
 branchandobstacles.costdata <- loadcostdata("branchandobstacles", "21-Dec-2020")
 branchandobstacles.data <- combinedata(branchandobstacles.flowdata, 
                                        branchandobstacles.costdata)
+write.csv(branchandobstacles.data, 
+          file = paste0("../results/r-csv-files/branchandobstacles_results",
+                        "/fulldataset_branchandobstacles_",
+                        Sys.Date(),".csv"))
 
 obstacles.flowdata <- loadflowdata("obstacles","2020-12-27", dia, density)
 obstacles.costdata <- loadcostdata("obstacles","26-Dec-2020")
 obstacles.data <- combinedata(obstacles.flowdata, obstacles.costdata)
+write.csv(obstacles.data, 
+          file = paste0("../results/r-csv-files/obstacles_results",
+                        "/fulldataset_obstacles_",
+                        Sys.Date(),".csv"))
 
 
-data <- list("racetrack" = racetrack.data, "obstacles" = obstacles.data, "branch" = branch.data, "branchandobstacles" = branchandobstacles.data)
+data <- list("racetrack" = racetrack.data, 
+             "obstacles" = obstacles.data,
+             "branch" = branch.data, 
+             "branchandobstacles" = branchandobstacles.data)
 tracklist<-c("racetrack", "obstacles", "branch", "branchandobstacles")
 alldata <- combinetracks(data, tracklist)
 alldata.melted <- melt(alldata, id.vars = c("number","Wo","CR","Freq","track"))
+
 
 ```
 
