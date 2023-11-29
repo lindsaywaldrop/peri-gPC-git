@@ -3,8 +3,8 @@
 #Shell script for compiling the main2d program in IBAMR. To be run on Bridges.
 WD=${1:?Please provide a path for the main directory}
 track=${2:?Please provide a circulatory system}
-a=${3:?Please provide a number of simulations to run}
-name=${4:?Please provide your bridges username}
+#a=${3:?Please provide a number of simulations to run}
+#name=${4:?Please provide your bridges username}
 
 cd "$WD"
 echo "Setting up directories..."
@@ -32,11 +32,8 @@ rm *.o stamp-2d *.C Makefile *.h
 
 cd "$WD"/src/bridges/
 
-sh setinput2d.sh "$WD" ${a}
-sh setparameters.sh "$WD" ${a}
+#sh setinput2d.sh "$WD" ${a}
+#sh setparameters.sh "$WD" ${a}
 
-awk -v var="$name" 'NR==15 {$0="WD=/pylon5/bi561lp/"'"var"'"/peri-gPC-git"} 1' runperi.job > temprunperi.job
-rm runperi.job
-mv temprunperi.job runperi.job
 
 echo "Complete"

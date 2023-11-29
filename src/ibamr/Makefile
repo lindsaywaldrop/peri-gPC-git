@@ -2,10 +2,10 @@
 ## Here specify the location of the IBAMR source and the location
 ## where IBAMR has been built.
 ##
-LIBS = $(LIBS) -lnetcdf -lcurl
+#LIBS = $(LIBS) -lnetcdf -lcurl
 #
-IBAMR_SRC_DIR = /home/lwaldrop/sfw/bridges/ibamr/IBAMR
-IBAMR_BUILD_DIR = /home/lwaldrop/sfw/bridges/ibamr/bridges-intel-opt
+IBAMR_SRC_DIR = /home/waldrop@chapman.edu/sfw/ibamr/IBAMR
+IBAMR_BUILD_DIR = /home/waldrop@chapman.edu/sfw/ibamr/ibamr-opt
 #
 ######################################################################
 ## Include variables specific to the particular IBAMR build.
